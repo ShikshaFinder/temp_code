@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.String
+  access_token      String?  @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.String
+  session_state     String?
+  tags              String[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  accounts     Account[]
+  EventRegSolo EventRegSolo[]
+  TeamLeader   Team[]         @relation(name: "team_leader")
+}
+
+model EventSolo {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  e_name        String @unique
+  e_image       String
+  e_description String
+  reg_fees      Float
+
+  EventRegSolo EventRegSolo[]
+}
+
+model EventTeam {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  e_name        String @unique
+  e_image       String
+  e_description String
+  reg_fees      Float
+  max_member    Int
+  min_member    Int
+
+  Team         Team[]
+  EventRegTeam EventRegTeam[]
+}
+
+model EventRegSolo {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  user_id   String  @db.ObjectId
+  event_id  String  @db.ObjectId
+  clg_name  String
+  paid_fees Boolean
+
+  Event EventSolo @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  User  User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model EventRegTeam {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  event_id String @db.ObjectId
+  team_id  String @db.ObjectId
+
+  team  Team      @relation(fields: [team_id], references: [id])
+  event EventTeam @relation(fields: [event_id], references: [id])
+
+  @@unique([team_id, event_id])
+}
+
+model Team {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  event_id        String   @db.ObjectId
+  leader_id       String   @db.ObjectId
+  leader          User     @relation(fields: [leader_id], references: [id], name: "team_leader")
+  members_email   String[]
+  leader_clg_name String
+  same_clg_member Boolean  @default(false)
+  paid_fees       Boolean
+
+  Event        EventTeam      @relation(fields: [event_id], references: [id])
+  EventRegTeam EventRegTeam[]
+}
