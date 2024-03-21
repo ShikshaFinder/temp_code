@@ -11,10 +11,9 @@ const TestimonialSection = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="shadow-lg rounded-xl p-8 bg-white dark:bg-gray-800">
-              <h3 className="text-xl font-bold">Efficient Collaborating</h3>
+              <h3 className="text-xl font-bold">LDCE PlaceHolder</h3>
               <p className="text-gray-600 dark:text-gray-400 text-center mt-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor
-                neque sed imperdiet nibh lectus feugiat nunc sem.
+               Here LDCE CLUBS DETAIL WILL BE THERE
               </p>
               <div className="flex items-center mt-8">
                 <img
